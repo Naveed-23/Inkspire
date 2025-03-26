@@ -2,36 +2,29 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from '@repo/backend-common/config';
 
+export interface AuthenticatedRequest extends Request {
+    user?: { userId: string };
+}
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    try{
-        const authHeaders = req.headers.authorization;
-        const header = req.headers["authorization"];
-        console.log("header", header);
-        if(!authHeaders?.startsWith("Bearer ")){
-            res.json({
-                msg: "Incorrrect Headers"
-            });
+export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    try {
+        // Get the token from cookies instead of headers
+        const token = req.cookies?.token;
+        if (!token) {
+            res.status(401).json({ msg: "Unauthorized: No token provided" });
             return;
         }
-        const words = authHeaders.split(' ');
-        const token = words[1] as string;
-        console.log("Token", token);
-    
+
+        // Verify token
         const verifiedToken = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
         console.log("verifiedToken", verifiedToken);
-        if(verifiedToken){
-            req.body.userId =  verifiedToken?.userId;
-            next();
-            return;
-        }
-        res.json({
-            msg: "Authentication failed"
-        });
-    }catch(err){
-        res.json({
-            err
-        });
+        
+        // Attach user info to request object
+        req.user = { userId: verifiedToken.userId };
+
+        next(); // Proceed to next middleware/route
+    } catch (err) {
+        res.status(401).json({ msg: "Unauthorized: Invalid token" });
         return;
     }
 }

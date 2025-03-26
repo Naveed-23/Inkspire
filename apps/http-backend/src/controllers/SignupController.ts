@@ -38,6 +38,12 @@ export const SignupController = async (req: Request, res: Response) => {
         if(user){
             const userId = user?.id;
             const token = jwt.sign({userId}, JWT_SECRET);
+            res.cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            })
             res.json({
                 msg: "User successfully Created",
                 token

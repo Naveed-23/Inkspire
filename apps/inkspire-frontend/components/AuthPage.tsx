@@ -7,24 +7,38 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { SignupSchema } from "@repo/common-folder/types";
+import { SigninSchema, SignupSchema } from "@repo/common-folder/types";
+import axios from "axios";
+import { HTTP_BACKEND } from "@/config";
+import { useRouter } from "next/navigation";
 
-type AuthFormData = z.infer<typeof SignupSchema>;
+type SigninFormData = z.infer<typeof SigninSchema>;
+type SignupFormData = z.infer<typeof SignupSchema>;
+
 
 export function AuthPage({ isSignin }: { isSignin: boolean}){
-    const { reset, register, handleSubmit, setError, formState: { errors }} = useForm<AuthFormData>();
+    const { reset, register, handleSubmit, setError, formState: { errors }} = useForm<SignupFormData | (SigninFormData & Partial<SignupFormData>)>();
+    const router = useRouter();
 
-    function onSubmit(data: AuthFormData) {
-        const parsedData = SignupSchema.safeParse(data);
+    async function onSubmit(data: SigninFormData | SignupFormData) {
+        const parsedData = (!isSignin ? SignupSchema.safeParse(data) : SigninSchema.safeParse(data)); 
 
         if(!parsedData.success){
             console.log("parsedData", parsedData);
             parsedData.error.errors.forEach(err => {
-                setError(err.path[0] as keyof AuthFormData, { message: err.message})
+                setError(err.path[0] as keyof (SigninFormData | SignupFormData), { message: err.message})
             });
             return;
         }
-        console.log("Form Data", data);
+        const requestData = isSignin
+      ? { email: parsedData.data.email, password: parsedData.data.password }
+      : { email: parsedData.data.email, password: parsedData.data.password, name: (parsedData.data as SignupFormData).name };
+
+      const res = await axios.post(`${HTTP_BACKEND}/auth/${isSignin ? 'signin' : 'signup'}`, requestData, { withCredentials: true });
+      console.log("res", res);
+      if(res){
+        router.push('/ink')
+      }
     }    
     
     return (
@@ -55,7 +69,7 @@ export function AuthPage({ isSignin }: { isSignin: boolean}){
                 {!isSignin && <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="name">Name</Label>
                   <Input id="name" {...register("name", { required: !isSignin })} placeholder="John Snow" />
-                  {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+                  {errors.name?.message && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                 </div>}
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="name">Email</Label>
