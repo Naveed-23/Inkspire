@@ -16,10 +16,7 @@ type Shape = {
 
 } | {
     type: "pencil";
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
+    points: { x: number, y: number }[];
 }
 
 export class Game {
@@ -32,6 +29,7 @@ export class Game {
     private startX = 0;
     private startY = 0;
     private selectedTool: Tool = "circle";
+    private currentPencilPoints: { x: number; y: number }[] = [];
     socket: WebSocket;
 
     constructor(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
@@ -84,45 +82,74 @@ export class Game {
         this.existingShapes.map((shape) => {
             if(shape.type === "rect") {
                 this.ctx.strokeStyle = "rgba(255, 255, 255)";
-                this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+                this.drawShape(shape);
             }else if(shape.type === "circle"){
-                this.ctx.beginPath();
-                this.ctx.arc(shape.centerX, shape.centerY, Math.abs(shape.radius), 0, Math.PI * 2);
-                this.ctx.stroke();
-                this.ctx.closePath();
+                this.drawShape(shape);
+            }
+            else if (shape.type === "pencil"){
+                this.drawShape(shape);
             }
         })
     }
 
     mouseDownHandler = (e: MouseEvent) => {
+        const rect = this.canvas.getBoundingClientRect();
         this.clicked = true;
-        this.startX = e.clientX;
-        this.startY = e.clientY;
+        this.startX = e.clientX - rect.left;
+        this.startY = e.clientY - rect.top;
+
+        console.log("Mouse Down at", this.startX, this.startY);
+
+        if(this.selectedTool === "pencil"){
+            this.currentPencilPoints = [{ x: this.startX, y: this.startY }];
+        }
     }
 
     
     mouseUpHandler = (e: MouseEvent) => {
         this.clicked = false;
-        const width = e.clientX - this.startX;
-        const height = e.clientY - this.startY; 
+        const rect = this.canvas.getBoundingClientRect();
+        const endX = e.clientX - rect.left;
+        const endY = e.clientY - rect.top;
+
+        const width = endX - this.startX;
+        const height = endY - this.startY; 
+
         const selectedTool = this.selectedTool;
+
+        console.log("Mouse Up at", endX, endY);
+        console.log("Width and Height", width, height);
         let shape: Shape | null = null;
+
         if(selectedTool === "rect"){
+            const x = width < 0 ? this.startX + width : this.startX;
+            const y = height < 0 ? this.startY + height : this.startY;
             shape = {
                 type: "rect",
-                x: this.startX,
-                y: this.startY,
-                width,
-                height
+                x,
+                y,
+                width: Math.abs(width),
+                height: Math.abs(height),
             };
         }else if(selectedTool === "circle"){
-            const radius = Math.max(width, height) / 2;
+            const centerX = this.startX + width / 2;
+            const centerY = this.startY + height / 2;
+            
+            const radius = Math.sqrt(width * width + height * height) / 2;
             shape= {
                 type: "circle",
-                radius: radius,
-                centerX: this.startX + radius,
-                centerY: this.startY + radius
+                radius: Math.abs(radius),
+                centerX,
+                centerY
             };
+        }else if(selectedTool === "pencil"){
+            if(this.currentPencilPoints.length > 1) {
+                shape = {
+                    type: "pencil",
+                    points: [...this.currentPencilPoints]
+                };
+            }
+            this.currentPencilPoints = [];
         }
         
         if(!shape){
@@ -141,23 +168,44 @@ export class Game {
     }
 
     mouseMoveHandler = (e: MouseEvent) => {
+        const rect = this.canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
         if(this.clicked){
-        const width = e.clientX - this.startX;
-        const height = e.clientY - this.startY;
-        this.clearCanvas();
-        this.ctx.strokeStyle = "rgba(255, 255, 255)";
-        const selectedTool = this.selectedTool
+            this.clearCanvas();
+            this.ctx.strokeStyle = "rgba(255, 255, 255)";
+
+            const width = mouseX - this.startX;
+            const height = mouseY - this.startY;
+            
+            const selectedTool = this.selectedTool
         if(selectedTool === "rect"){
-            this.ctx.strokeRect(this.startX, this.startY, width, height);
+            const x = width < 0 ? this.startX + width : this.startX;
+            const y = height < 0 ? this.startY + height : this.startY;
+            this.ctx.strokeRect(x, y, Math.abs(width), Math.abs(height));
         }
         else if(selectedTool === "circle"){
-            const radius = Math.max(width, height) / 2;
-            const centerX = this.startX + radius;
-            const centerY = this.startY + radius;
+            const centerX = this.startX + width / 2;
+            const centerY = this.startY + height / 2;
+            const radius = Math.sqrt(width * width + height * height) / 2;
             this.ctx.beginPath();
             this.ctx.arc(centerX, centerY, Math.abs(radius), 0, Math.PI * 2);
             this.ctx.stroke();
             this.ctx.closePath();
+        }
+        else if(selectedTool === "pencil"){
+            this.currentPencilPoints.push({x: mouseX, y: mouseY});
+
+            // Draw Shape
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.currentPencilPoints[0].x, this.currentPencilPoints[0].y);
+            for(let i=1; i<this.currentPencilPoints.length; i++){
+                this.ctx.lineTo(this.currentPencilPoints[i].x, this.currentPencilPoints[i].y);
+            }
+            this.ctx.stroke();
+            this.ctx.closePath();
+
         }
         }
 
@@ -169,6 +217,26 @@ export class Game {
         this.canvas.addEventListener("mouseup", this.mouseUpHandler)
 
         this.canvas.addEventListener("mousemove", this.mouseMoveHandler)
+    }
+
+    private drawShape(shape: Shape) {
+        this.ctx.beginPath();
+        if(shape.type === "rect"){
+            this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+        }
+        else if(shape.type === "circle"){
+            this.ctx.arc(shape.centerX, shape.centerY, Math.abs(shape.radius), 0, Math.PI * 2);
+            
+        }
+        else if(shape.type === "pencil"){
+            if (shape.points.length < 2) return;
+            this.ctx.moveTo(shape.points[0].x, shape.points[0].y);
+            for (let i = 1; i < shape.points.length; i++) {
+                this.ctx.lineTo(shape.points[i].x, shape.points[i].y);
+            }
+        }
+        this.ctx.stroke();
+        this.ctx.closePath();
     }
 
 
