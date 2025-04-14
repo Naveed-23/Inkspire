@@ -20,13 +20,19 @@ export default function Ink({ roomId, socket }: {
     useEffect(() => {
         if(canvasRef.current){
             const g = new Game(canvasRef.current, roomId, socket)
-            setGame(g); 
+            setGame(g);
+            
+
+            // Cleanup panzoom on unmount
             return () => {
                 g.destroy();
-            }
+            };
+            
         }
 
     }, [canvasRef]);
+    
+      
     
     return <div style={{
         height: "100vh",
@@ -44,6 +50,26 @@ export default function Ink({ roomId, socket }: {
                 setSelectedTool("pencil")
             }} icon={<PencilIcon />}/>
         </div>
-        <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight}></canvas>
+        <div
+            id="canvas-container"
+            style={{
+                width: "100%",
+                height: "100%",
+                position: "relative"
+            }}
+            >
+            <canvas
+                id="canvas"
+                ref={canvasRef}
+                width={window.innerWidth}
+                height={window.innerHeight}
+                style={{
+                display: "block",
+                }}
+            />
+            </div>
     </div>
 }
+
+
+
