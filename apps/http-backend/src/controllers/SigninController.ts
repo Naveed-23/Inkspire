@@ -21,7 +21,7 @@ export const SigninController = async (req: Request, res: Response) => {
             }
         });
         if(!user){
-            res.json({
+            res.status(404).json({
                 msg: "User not exist"
             });
             return;

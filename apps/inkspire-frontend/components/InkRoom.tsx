@@ -9,7 +9,7 @@ export default function InkRoom({ roomId }: {roomId: string}){
     const [socket, setSocket] = useState<WebSocket | null>(null);
 
     useEffect(() => {
-        const ws = new WebSocket(`${WS_URL}?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxYjViZjk2ZS1kZWRjLTRhNTktODEwOS0zMTBkZDRhOGE1MWMiLCJpYXQiOjE3NDM3OTA5NzR9.GwPcflUnvccKRC4FI6fNmtYv1ex0AE-lD9rEfmBqhco`);
+        const ws = new WebSocket(`${WS_URL}?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiOTg3ZWZlNy1jZWQxLTRlZmMtYmNhMi1kNzhkYzMzZTNjODUiLCJpYXQiOjE3NDUyODY5NzN9.n2AQXyoFGHRrx21m2eNf3FnaPuORdmB19faZ7SKR_uc`);
 
         ws.onopen = () => {
             setSocket(ws);
