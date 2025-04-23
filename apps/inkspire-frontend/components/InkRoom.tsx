@@ -3,6 +3,7 @@
 import { WS_URL } from "@/config";
 import { useEffect, useState } from "react";
 import Ink from "./Ink";
+import { ConnectionLoader } from "./ui/Loader";
 
 export default function InkRoom({ roomId }: {roomId: string}){
     
@@ -22,9 +23,7 @@ export default function InkRoom({ roomId }: {roomId: string}){
     },[])
      
     if(!socket){
-        return <div>
-            Connecting to server...
-        </div>
+        return <ConnectionLoader />
     }
 
     return <Ink socket={socket} roomId={roomId} />

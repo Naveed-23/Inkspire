@@ -5,6 +5,7 @@ import { SignupController } from "../controllers/SignupController.js";
 import { authMiddleware } from "../middleware/index.js";
 import { GetChatsController } from "../controllers/GetChatsController.js";
 import { GetRoomIdController } from "../controllers/GetRoomIdController.js";
+import { GetRoomsController } from "../controllers/GetRoomsController.js";
 
 export const router: Router = express.Router();
 
@@ -16,5 +17,6 @@ router.post('/signin', SigninController);
 
 
 protectedRouter.post('/room', authMiddleware, CreateRoomController);
+protectedRouter.get('/rooms', authMiddleware, GetRoomsController);
 protectedRouter.get('/chats/:roomId', authMiddleware, GetChatsController);
 protectedRouter.get('/room/:slug', authMiddleware, GetRoomIdController);
