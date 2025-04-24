@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 
 
 export const GetRoomsController = async (req: Request, res: Response) => {
+    console.log("hi there")
     const messages = await prismaClient.room.findMany();
 
     console.log(messages);

@@ -30,11 +30,12 @@ export const SigninController = async (req: Request, res: Response) => {
         if(verifyPass){
             const userId = user.id;
             const token = jwt.sign({userId}, JWT_SECRET);
+            console.log("token", token);
             // Set token in HTTP-only cookie
             res.cookie("token", token, {
                 httpOnly: true, // Prevent access via JavaScript (XSS protection)
                 secure: process.env.NODE_ENV === "production",  // HTTPS in production
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 7 * 24 * 60 * 1000 // 7 days
             })
             res.json({

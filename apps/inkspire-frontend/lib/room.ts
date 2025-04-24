@@ -1,7 +1,5 @@
-// lib/api/rooms.ts
-// import { apiClient } from "./client";
-
-import { apiClient } from "./cleint";
+import axios from "axios";
+import { HTTP_BACKEND } from "@/config";
 
 interface Room {
   id: number;
@@ -12,7 +10,9 @@ interface Room {
 
 export const getRooms = async () => {
   try {
-    const response = await apiClient.get("/api/rooms");
+    console.log("enter")
+    const response = await axios.get(`${HTTP_BACKEND}/auth/rooms`);
+    console.log(response)
     return { messages: response.data.messages as Room[], error: null };
   } catch (err) {
     console.error("Error fetching rooms:", err);

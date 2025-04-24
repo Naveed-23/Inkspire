@@ -1,12 +1,9 @@
-// app/create/RoomList.tsx
 import { getRooms } from "@/lib/room";
 import { DoorOpen, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
-// import { getRooms } from "@/lib/api/rooms";
 
 export async function RoomList() {
   const { messages: rooms, error } = await getRooms();
-  console.log("messages", rooms)
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">

@@ -37,7 +37,7 @@ export default function Ink({ roomId, socket }: {
     return <div style={{
         height: "100vh",
         overflow: "hidden"
-    }}>
+    }} className="bg-black">
         <div className="flex gap-2 justify-center">
             {/* Make a Top Bar Component */}
             <TopBar selectedTool={selectedTool} onToolSelect={setSelectedTool} />

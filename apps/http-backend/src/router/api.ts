@@ -14,9 +14,9 @@ export const protectedRouter: Router = express.Router();
 
 router.post('/signup', SignupController);
 router.post('/signin', SigninController);
+router.get('/rooms', GetRoomsController);
 
 
 protectedRouter.post('/room', authMiddleware, CreateRoomController);
-protectedRouter.get('/rooms', authMiddleware, GetRoomsController);
 protectedRouter.get('/chats/:roomId', authMiddleware, GetChatsController);
 protectedRouter.get('/room/:slug', authMiddleware, GetRoomIdController);

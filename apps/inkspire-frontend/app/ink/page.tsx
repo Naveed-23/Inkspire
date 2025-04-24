@@ -1,7 +1,7 @@
 // app/create/page.tsx
 import { CreateRoomSection } from "@/components/CreateRoomSection";
 import { RoomList } from "@/components/RoomList";
-import { Palette } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 // import { RoomList } from "./RoomList";
 // import { CreateRoomSection } from "./CreateRoomSection";
@@ -13,7 +13,7 @@ export default async function RoomListPage() {
       <nav className="flex items-center justify-between p-6">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-md bg-indigo-600 flex items-center justify-center">
-            <Palette className="h-5 w-5 text-white" />
+          <Pencil className="h-5 w-5 text-white" />
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Inkspire
