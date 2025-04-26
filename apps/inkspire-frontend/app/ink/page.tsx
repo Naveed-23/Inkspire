@@ -1,10 +1,6 @@
-// app/create/page.tsx
 import { CreateRoomSection } from "@/components/CreateRoomSection";
 import { RoomList } from "@/components/RoomList";
 import { Pencil } from "lucide-react";
-import Link from "next/link";
-// import { RoomList } from "./RoomList";
-// import { CreateRoomSection } from "./CreateRoomSection";
 
 export default async function RoomListPage() {
   return (

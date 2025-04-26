@@ -1,9 +1,9 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
-import IconButton from "./IconButton";
+import { useEffect, useRef, useState } from "react";
 import { Circle, PencilIcon, RectangleHorizontalIcon } from "lucide-react";
 import { Game } from "@/draw/Game";
 
 export type Tool = "circle" | "rect" | "pencil"
+
 
 export default function Ink({ roomId, socket }: {
     roomId: string,
@@ -12,61 +12,75 @@ export default function Ink({ roomId, socket }: {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [game, setGame] = useState<Game>();
     const [selectedTool, setSelectedTool] = useState<Tool>("circle");
+    const [color, setColor] = useState("#ffffff");
+    const [lineWidth, setLineWidth] = useState(2);
 
     useEffect(() => {
         game?.setTool(selectedTool);
     }, [selectedTool, game])
 
     useEffect(() => {
+        game?.setColor(color);
+    }, [color, game])
+
+    useEffect(() => {
+        game?.setLineWidth(lineWidth);
+    }, [lineWidth, game])
+
+    useEffect(() => {
         if(canvasRef.current){
             const g = new Game(canvasRef.current, roomId, socket)
             setGame(g);
-            
-
-            // Cleanup panzoom on unmount
+        
             return () => {
                 g.destroy();
             };
-            
         }
-
     }, [canvasRef]);
     
-      
-    
-    return <div style={{
-        height: "100vh",
-        overflow: "hidden"
-    }} className="bg-black">
-        <div className="flex gap-2 justify-center">
-            {/* Make a Top Bar Component */}
-            <TopBar selectedTool={selectedTool} onToolSelect={setSelectedTool} />
-        </div>
-        <div className="scroll-smooth"
-            id="canvas-container"
-            style={{
+    return (
+        <div style={{ height: "100vh", overflow: "hidden" }} className="bg-black">
+            <div className="flex gap-2 justify-center">
+                <TopBar 
+                    selectedTool={selectedTool} 
+                    onToolSelect={setSelectedTool}
+                    color={color}
+                    onColorChange={setColor}
+                    lineWidth={lineWidth}
+                    onLineWidthChange={setLineWidth}
+                />
+            </div>
+            <div className="scroll-smooth" id="canvas-container" style={{
                 width: "100%",
                 height: "100%",
                 position: "relative"
-            }}
-            >
-            <canvas
-                id="canvas"
-                ref={canvasRef}
-                width={window.innerWidth}
-                height={window.innerHeight}
-                style={{
-                display: "block",
-                }}
-            />
+            }}>
+                <canvas
+                    id="canvas"
+                    ref={canvasRef}
+                    width={window.innerWidth}
+                    height={window.innerHeight}
+                    style={{ display: "block" }}
+                />
             </div>
-    </div>
+        </div>
+    )
 }
 
-
-function TopBar({ selectedTool, onToolSelect }: {
+function TopBar({ 
+    selectedTool, 
+    onToolSelect,
+    color,
+    onColorChange,
+    lineWidth,
+    onLineWidthChange
+}: {
     selectedTool: Tool,
-    onToolSelect: (tool: Tool) => void
+    onToolSelect: (tool: Tool) => void,
+    color: string,
+    onColorChange: (color: string) => void,
+    lineWidth: number,
+    onLineWidthChange: (width: number) => void
 }) {
     return (
         <nav className="bg-gray-800 text-white shadow-lg rounded-full pl-6 pr-6 mt-1 py-1">
@@ -105,19 +119,23 @@ function TopBar({ selectedTool, onToolSelect }: {
                         type="color" 
                         id="color-picker" 
                         className="w-8 h-8 rounded-md border border-gray-600 cursor-pointer"
-                        defaultValue="#ffffff"
+                        value={color}
+                        onChange={(e) => onColorChange(e.target.value)}
                     />
                 </div>
 
                 {/* Stroke width selector */}
                 <select 
                     className="bg-gray-700 text-white text-sm rounded-md p-1 border border-gray-600"
-                    defaultValue="2"
+                    value={lineWidth}
+                    onChange={(e) => onLineWidthChange(Number(e.target.value))}
                 >
                     <option value="1">1px</option>
                     <option value="2">2px</option>
                     <option value="3">3px</option>
                     <option value="5">5px</option>
+                    <option value="8">8px</option>
+                    <option value="10">10px</option>
                 </select>
             </div>
         </nav>

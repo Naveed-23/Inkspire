@@ -4,27 +4,56 @@ import { WS_URL } from "@/config";
 import { useEffect, useState } from "react";
 import Ink from "./Ink";
 import { ConnectionLoader } from "./ui/Loader";
+import getToken from "@/lib/getToken";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
-export default function InkRoom({ roomId }: {roomId: string}){
-    
-    const [socket, setSocket] = useState<WebSocket | null>(null);
+export default function InkRoom({ roomId }: { roomId: string }) {
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  useAuthRedirect();
 
-    useEffect(() => {
-        const ws = new WebSocket(`${WS_URL}?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiOTg3ZWZlNy1jZWQxLTRlZmMtYmNhMi1kNzhkYzMzZTNjODUiLCJpYXQiOjE3NDUyODY5NzN9.n2AQXyoFGHRrx21m2eNf3FnaPuORdmB19faZ7SKR_uc`);
-
-        ws.onopen = () => {
-            setSocket(ws);
-            ws.send(JSON.stringify({
-                type: "join_room",
-                roomId
-            }))
+  useEffect(() => {
+    async function connectSocket() {
+      try {
+        const token = await getToken();  // <-- await here
+  
+        if (!token) {
+          console.error("No token found in cookies");
+          return;
         }
-
-    },[])
-     
-    if(!socket){
-        return <ConnectionLoader />
+  
+        const ws = new WebSocket(`${WS_URL}?token=${token}`);
+  
+        ws.onopen = () => {
+          setSocket(ws);
+          ws.send(
+            JSON.stringify({
+              type: "join_room",
+              roomId,
+            })
+          );
+        };
+  
+        ws.onerror = (error) => {
+          console.error("WebSocket error:", error);
+        };
+  
+        // Clean up WebSocket on unmount
+        return () => {
+          ws.close();
+        };
+      } catch (err) {
+        console.error("Failed to get token:", err);
+      }
     }
+  
+    connectSocket();
+  
+  }, [roomId]);
+  // Added roomId to deps just in case it changes
 
-    return <Ink socket={socket} roomId={roomId} />
+  if (!socket) {
+    return <ConnectionLoader />;
+  }
+
+  return <Ink socket={socket} roomId={roomId} />;
 }

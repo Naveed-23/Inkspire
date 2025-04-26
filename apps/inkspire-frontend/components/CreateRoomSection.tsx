@@ -1,11 +1,11 @@
-// app/create/CreateRoomSection.tsx
 "use client";
 
 import { Lock, Users } from "lucide-react";
 import CreateRoom from "./CreateRoom";
-// import { CreateRoom } from "@/components/CreateRoom";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 export function CreateRoomSection() {
+    useAuthRedirect();
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center gap-3 mb-6">
