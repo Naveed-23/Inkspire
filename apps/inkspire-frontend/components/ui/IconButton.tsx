@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Button } from "./ui/button";
+import { Button } from "./button";
 
 export default function IconButton({ icon, onClick, activated }: {
     icon: ReactNode,

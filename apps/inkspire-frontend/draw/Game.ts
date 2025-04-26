@@ -21,6 +21,22 @@ type Shape = {
     points: { x: number, y: number }[];
     color: string;
     lineWidth: number;
+} | {
+    type: "rhombus";
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    color: string;
+    lineWidth: number;
+} | {
+    type: "arrow";
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    color: string;
+    lineWidth: number;
 }
 
 export class Game {
@@ -210,6 +226,28 @@ export class Game {
                 };
             }
             this.currentPencilPoints = [];
+        } else if(selectedTool === "rhombus") {
+            const x = width < 0 ? this.startX + width : this.startX;
+            const y = height < 0 ? this.startY + height : this.startY;
+            shape = {
+                type: "rhombus",
+                x,
+                y,
+                width: Math.abs(width),
+                height: Math.abs(height),
+                color: this.currentColor,
+                lineWidth: this.currentLineWidth
+            };
+        } else if(selectedTool === "arrow") {
+            shape = {
+                type: "arrow",
+                startX: this.startX,
+                startY: this.startY,
+                endX: endX,
+                endY: endY,
+                color: this.currentColor,
+                lineWidth: this.currentLineWidth
+            };
         }
         
         if(!shape) return;
@@ -281,6 +319,22 @@ export class Game {
                 }
                 this.ctx.stroke();
                 this.ctx.closePath();
+            } else if(this.selectedTool === "rhombus") {
+                const x = width < 0 ? this.startX + width : this.startX;
+                const y = height < 0 ? this.startY + height : this.startY;
+                const w = Math.abs(width);
+                const h = Math.abs(height);
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(x + w/2, y);
+                this.ctx.lineTo(x + w, y + h/2);
+                this.ctx.lineTo(x + w/2, y + h);
+                this.ctx.lineTo(x, y + h/2);
+                this.ctx.closePath();
+                this.ctx.stroke();
+            }
+            else if(this.selectedTool === "arrow") {
+                this.drawArrow(this.ctx, this.startX, this.startY, currentX, currentY);
             }
             this.ctx.restore();
         }
@@ -339,7 +393,48 @@ export class Game {
                 this.ctx.lineTo(shape.points[i].x, shape.points[i].y);
             }
             this.ctx.stroke(); // Explicit stroke for pencil
+        } else if(shape.type === "rhombus") {
+            const x = shape.x;
+            const y = shape.y;
+            const w = shape.width;
+            const h = shape.height;
+            
+            this.ctx.moveTo(x + w/2, y);
+            this.ctx.lineTo(x + w, y + h/2);
+            this.ctx.lineTo(x + w/2, y + h);
+            this.ctx.lineTo(x, y + h/2);
+            this.ctx.closePath();
+            this.ctx.stroke();
+        }
+        else if(shape.type === "arrow") {
+            this.drawArrow(this.ctx, shape.startX, shape.startY, shape.endX, shape.endY);
         }
         this.ctx.closePath();
+    }
+
+    // Helper function to draw an arrow
+    private drawArrow(ctx: CanvasRenderingContext2D, fromX: number, fromY: number, toX: number, toY: number) {
+        const headLength = 15 / this.scale;
+        const angle = Math.atan2(toY - fromY, toX - fromX);
+        
+        // Draw the shaft of the arrow
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+        
+        // Draw the head of the arrow
+        ctx.beginPath();
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(
+            toX - headLength * Math.cos(angle - Math.PI / 6),
+            toY - headLength * Math.sin(angle - Math.PI / 6)
+        );
+        ctx.moveTo(toX, toY);
+        ctx.lineTo(
+            toX - headLength * Math.cos(angle + Math.PI / 6),
+            toY - headLength * Math.sin(angle + Math.PI / 6)
+        );
+        ctx.stroke();
     }
 }
