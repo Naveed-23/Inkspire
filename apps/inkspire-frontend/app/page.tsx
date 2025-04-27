@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Circle, Diamond, Pencil, Ruler, Share2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { ModeToggle } from '@/components/ModeToggle';
 
 const InkCanvasAnimation = () => {
   const [activeStroke, setActiveStroke] = useState(0);
@@ -36,7 +37,7 @@ const InkCanvasAnimation = () => {
   const normalizedMouseY = (mousePosition.y / window.innerHeight) * 2 - 1;
 
   return (
-    <div className="relative w-full h-64 md:h-96 bg-gray-900 rounded-3xl overflow-hidden">
+    <div className="relative w-full h-64 md:h-96 bg-card rounded-3xl overflow-hidden border">
       <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
       
       {/* Mouse position indicator (hidden but used for effects) */}
@@ -251,15 +252,16 @@ const FeatureCard = ({ icon, title, description, delay }: any) => (
     transition={{ duration: 0.6, delay: delay * 0.1 }}
     viewport={{ once: true }}
     whileHover={{ y: -10 }}
-    className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl border border-gray-800 shadow-2xl hover:shadow-indigo-500/20 transition-all"
+    className="bg-card p-8 rounded-2xl border shadow-2xl hover:shadow-primary/20 transition-all"
   >
-    <div className="w-14 h-14 rounded-xl bg-indigo-900/50 flex items-center justify-center mb-6">
+    <div className="w-14 h-14 rounded-xl bg-indigo-800/50 flex items-center justify-center mb-6">
       {icon}
     </div>
     <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
     <p className="text-gray-400">{description}</p>
   </motion.div>
 );
+
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -271,7 +273,7 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-hidden">
       {/* Floating particles background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
@@ -326,17 +328,18 @@ export default function Home() {
           <div className="flex items-center gap-6">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link href="/signin" className="text-sm font-medium hover:text-indigo-400 transition-colors">
-                Sign In
+                Login
               </Link>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link 
                 href="/app" 
-                className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg font-medium shadow-lg hover:shadow-indigo-500/30 transition-all"
+                className="px-5 py-2 bg-gradient-to-r text-white from-indigo-600 to-purple-600 rounded-lg font-medium shadow-lg hover:shadow-indigo-500/30 transition-all"
               >
                 Launch App
               </Link>
-            </motion.div>
+            </motion.div> */}
+            <ModeToggle />
           </div>
         </div>
       </motion.header>
@@ -377,7 +380,7 @@ export default function Home() {
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
-                href="/app"
+                href="/ink"
                 className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl transition-all shadow-xl hover:shadow-indigo-500/30"
               >
                 Start Creating <ArrowRight className="h-5 w-5" />
@@ -413,19 +416,19 @@ export default function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FeatureCard
-            icon={<Share2 className="h-6 w-6 text-indigo-400" />}
+            icon={<Share2 className="h-6 w-6 text-indigo-700" />}
             title="Real-time Sync"
             description="See changes instantly as your team creates together"
             delay={0}
           />
           <FeatureCard
-            icon={<Pencil className="h-6 w-6 text-purple-400" />}
+            icon={<Pencil className="h-6 w-6 text-purple-700" />}
             title="Advanced Tools"
             description="Precision drawing tools with customizable settings"
             delay={1}
           />
           <FeatureCard
-            icon={<Ruler className="h-6 w-6 text-pink-400" />}
+            icon={<Ruler className="h-6 w-6 text-pink-700" />}
             title="Vector Precision"
             description="Crisp lines and shapes at any zoom level"
             delay={2}
@@ -440,18 +443,18 @@ export default function Home() {
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-3xl p-12 text-center border border-gray-800 shadow-2xl relative overflow-hidden"
+          className="bg-gradient-to-r from-indigo-800/50 to-purple-900/50 rounded-3xl p-12 text-center shadow-2xl relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10" />
           <div className="relative z-10">
-            <h2 className="text-3xl font-bold mb-6">Ready to Create Together?</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+            <h2 className="text-3xl font-bold mb-6 text-white">Ready to Create Together?</h2>
+            <p className="text-xl max-w-2xl mx-auto mb-10 text-white">
               Join artists, designers, and creators worldwide in our collaborative space.
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 href="/signup"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl font-medium shadow-xl hover:shadow-indigo-500/30 transition-all"
+                className="inline-flex text-white items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl font-medium shadow-xl hover:shadow-indigo-500/30 transition-all"
               >
                 Get Started Free <ArrowRight className="h-5 w-5" />
               </Link>

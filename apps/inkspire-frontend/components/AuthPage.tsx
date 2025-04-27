@@ -11,6 +11,7 @@ import { SigninSchema, SignupSchema } from "@repo/common-folder/types";
 import axios from "axios";
 import { HTTP_BACKEND } from "@/config";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type SigninFormData = z.infer<typeof SigninSchema>;
 type SignupFormData = z.infer<typeof SignupSchema>;
@@ -21,25 +22,45 @@ export function AuthPage({ isSignin }: { isSignin: boolean}){
     const router = useRouter();
 
     async function onSubmit(data: SigninFormData | SignupFormData) {
-        const parsedData = (!isSignin ? SignupSchema.safeParse(data) : SigninSchema.safeParse(data)); 
-
-        if(!parsedData.success){
-            console.log("parsedData", parsedData);
-            parsedData.error.errors.forEach(err => {
-                setError(err.path[0] as keyof (SigninFormData | SignupFormData), { message: err.message})
+      try {
+        const parsedData = isSignin
+          ? SigninSchema.safeParse(data)
+          : SignupSchema.safeParse(data);
+    
+        if (!parsedData.success) {
+          console.log("parsedData", parsedData);
+          parsedData.error.errors.forEach((err) => {
+            setError(err.path[0] as keyof (SigninFormData | SignupFormData), {
+              message: err.message,
             });
-            return;
+          });
+          return;
         }
+    
         const requestData = isSignin
-      ? { email: parsedData.data.email, password: parsedData.data.password }
-      : { email: parsedData.data.email, password: parsedData.data.password, name: (parsedData.data as SignupFormData).name };
-
-      const res = await axios.post(`${HTTP_BACKEND}/auth/${isSignin ? 'signin' : 'signup'}`, requestData, { withCredentials: true });
-      console.log("res", res);
-      if(res){
-        router.push('/ink')
+          ? { email: parsedData.data.email, password: parsedData.data.password }
+          : { 
+              email: parsedData.data.email, 
+              password: parsedData.data.password, 
+              name: (parsedData.data as SignupFormData).name 
+            };
+    
+        const res = await axios.post(
+          `${HTTP_BACKEND}/auth/${isSignin ? 'signin' : 'signup'}`,
+          requestData,
+          { withCredentials: true }
+        );
+    
+        if (res) {
+          toast.success(res.data.msg);
+          router.push('/ink');
+        }
+      } catch (err: any) {
+        console.error("Error:", err);
+        toast.error(err?.response?.data?.msg || "Something went wrong");
       }
-    }    
+    }
+       
     
     return (
         <Card className="w-[350px]">

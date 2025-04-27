@@ -1,20 +1,23 @@
 import { CreateRoomSection } from "@/components/CreateRoomSection";
 import { RoomList } from "@/components/RoomList";
 import { Pencil } from "lucide-react";
+import Link from "next/link";
 
 export default async function RoomListPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6">
+        <Link href={'/'}>
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-md bg-indigo-600 flex items-center justify-center">
-          <Pencil className="h-5 w-5 text-white" />
+                <Pencil className="h-5 w-5 text-white" />
           </div>
           <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Inkspire
           </span>
         </div>
+        </Link>
       </nav>
 
       {/* Main Content */}
