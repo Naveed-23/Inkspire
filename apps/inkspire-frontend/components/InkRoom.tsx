@@ -1,6 +1,5 @@
 "use client";
 
-import { WS_URL } from "@/config";
 import { useEffect, useState } from "react";
 import Ink from "./Ink";
 import { ConnectionLoader } from "./ui/Loader";
@@ -21,7 +20,7 @@ export default function InkRoom({ roomId }: { roomId: string }) {
           return;
         }
   
-        const ws = new WebSocket(`${WS_URL}?token=${token}`);
+        const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}?token=${token}`);
   
         ws.onopen = () => {
           setSocket(ws);

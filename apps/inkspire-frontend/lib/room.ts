@@ -1,5 +1,4 @@
 import axios from "axios";
-import { HTTP_BACKEND } from "@/config";
 
 interface Room {
   id: number;
@@ -11,7 +10,7 @@ interface Room {
 export const getRooms = async () => {
   try {
     console.log("enter")
-    const response = await axios.get(`${HTTP_BACKEND}/auth/rooms`);
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_HTTP_BACKEND}/auth/rooms`);
     console.log(response)
     return { messages: response.data.messages as Room[], error: null };
   } catch (err) {

@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SigninSchema, SignupSchema } from "@repo/common-folder/types";
 import axios from "axios";
-import { HTTP_BACKEND } from "@/config";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -44,9 +43,9 @@ export function AuthPage({ isSignin }: { isSignin: boolean}){
               password: parsedData.data.password, 
               name: (parsedData.data as SignupFormData).name 
             };
-    
+
         const res = await axios.post(
-          `${HTTP_BACKEND}/auth/${isSignin ? 'signin' : 'signup'}`,
+          `${process.env.NEXT_PUBLIC_HTTP_BACKEND}/auth/${isSignin ? 'signin' : 'signup'}`,
           requestData,
           { withCredentials: true }
         );

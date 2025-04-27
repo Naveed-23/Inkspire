@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { HTTP_BACKEND } from "@/config";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,7 +16,7 @@ export default function CreateRoom() {
         if (!room.trim()) return;
         setIsCreating(true);
         try {
-            const res = await axios.post(`${HTTP_BACKEND}/api/room`, {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_HTTP_BACKEND}/api/room`, {
                 name: room
             }, {
                 withCredentials: true,
