@@ -38,12 +38,20 @@ export const SignupController = async (req: Request, res: Response) => {
         if(user){
             const userId = user?.id;
             const token = jwt.sign({userId}, JWT_SECRET);
+            // res.cookie("token", token, {
+            //     httpOnly: true,
+            //     secure: process.env.NODE_ENV === "production",
+            //     sameSite: "lax",
+            //     maxAge: 7 * 24 * 60 * 60 * 1000
+            // })
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
-                maxAge: 7 * 24 * 60 * 60 * 1000
-            })
+                secure: true, // Always true in production
+                sameSite: "none", // Required for cross-site cookies
+                maxAge: 7 * 24 * 60 * 1000,
+                domain: process.env.NODE_ENV === "production" ? "https://inkspire.naveedhussain.tech" : undefined, // Set your production domain
+                path: "/"
+              });
             res.status(200).json({
                 msg: "User successfully Created",
                 token

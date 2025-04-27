@@ -10,6 +10,7 @@ export default async function getToken(){
         return res.data.token;
     }
     catch(err){
+        console.log(err)
         toast.error("Unauthorised Please Login first")
     }
 }
