@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 export const SignupController = async (req: Request, res: Response) => {
     const { success } = SignupSchema.safeParse(req.body);
     if(!success){
-        res.json({
+        res.status(401).json({
             msg: "Invalid Inputs"
         })
         return;
@@ -21,7 +21,7 @@ export const SignupController = async (req: Request, res: Response) => {
             }
         });
         if(existingUser){
-            res.json({
+            res.status(402).json({
                 msg: "User already exists"
             })
             return;
@@ -44,13 +44,13 @@ export const SignupController = async (req: Request, res: Response) => {
                 sameSite: "lax",
                 maxAge: 7 * 24 * 60 * 60 * 1000
             })
-            res.json({
+            res.status(200).json({
                 msg: "User successfully Created",
                 token
             });
             return;
         }
-        res.json({
+        res.status(401).json({
             msg: "Failed to Create User"
         });
         return;

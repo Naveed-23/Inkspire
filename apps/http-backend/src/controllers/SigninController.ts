@@ -8,7 +8,7 @@ import { JWT_SECRET } from "@repo/backend-common/config";
 export const SigninController = async (req: Request, res: Response) => {
     const { success } = SigninSchema.safeParse(req.body);
     if(!success){
-        res.json({
+        res.status(401).json({
             msg: "Invalid Inputs"
         })
         return;
@@ -38,13 +38,13 @@ export const SigninController = async (req: Request, res: Response) => {
                 sameSite: "lax",
                 maxAge: 7 * 24 * 60 * 1000 // 7 days
             })
-            res.json({
+            res.status(200).json({
                 msg: "User Successfully logged in",
                 token
             });
             return;
         }
-        res.json({
+        res.status(401).json({
             msg: "Invalid Password"
         });
         return;
