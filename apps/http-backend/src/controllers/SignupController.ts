@@ -49,7 +49,7 @@ export const SignupController = async (req: Request, res: Response) => {
                 secure: true, // Always true in production
                 sameSite: "none", // Required for cross-site cookies
                 maxAge: 7 * 24 * 60 * 1000,
-                domain: process.env.NODE_ENV === "production" ? "https://inkspire.naveedhussain.tech" : undefined, // Set your production domain
+                domain: process.env.NODE_ENV === "production" ? "https://inkspire.naveedhussain.tech" : "http:localhost:3000", // Set your production domain
                 path: "/"
               });
             res.status(200).json({
