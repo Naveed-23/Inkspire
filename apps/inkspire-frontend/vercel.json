@@ -6,10 +6,9 @@
         "use": "@vercel/next"
       }
     ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "api/$1"
-      }
-    ]
-}
+    "env": {
+      "PNPM_HOME": "/vercel/.pnpm"
+    },
+    "installCommand": "pnpm install --frozen-lockfile",
+    "buildCommand": "pnpm turbo run build --filter=inkspire-frontend"
+  }
