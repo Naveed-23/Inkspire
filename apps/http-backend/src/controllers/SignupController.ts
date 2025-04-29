@@ -38,13 +38,21 @@ export const SignupController = async (req: Request, res: Response) => {
         if(user){
             const userId = user?.id;
             const token = jwt.sign({userId}, JWT_SECRET);
+            // res.cookie("token", token, {
+            //     httpOnly: true,
+            //     secure: false, // ⛔ HTTPS only - must be false for localhost
+            //     sameSite: "lax", // ✅ lax works fine in development
+            //     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            //     path: "/"
+            //   });   
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: false, // ⛔ HTTPS only - must be false for localhost
-                sameSite: "lax", // ✅ lax works fine in development
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-                path: "/"
-              });                        
+                secure: true,
+                sameSite: "none",
+                domain: ".naveedhussain.tech", // 🔥 Leading dot means it works for all subdomains
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                path: "/",
+              });                                              
             res.status(200).json({
                 msg: "User successfully Created",
                 token
