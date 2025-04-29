@@ -48,7 +48,7 @@ export default function CreateRoom() {
             <Button 
                 onClick={handleRoom}
                 disabled={!room.trim() || isCreating}
-                className="w-full py-2 px-4 flex items-center justify-center gap-2"
+                className="w-full py-2 px-4 flex items-center justify-center gap-2 cursor-pointer"
             >
                 {isCreating ? "Creating..." : "Create Room"}
                 {!isCreating && <ArrowRight className="h-4 w-4" />}
