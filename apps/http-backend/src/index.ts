@@ -23,4 +23,8 @@ app.use(cookieParser());
 app.use('/auth', router);
 app.use('/api', protectedRouter);
 
+app.get('/status',(req, res) => {
+    res.status(200).json("Backend is runinng");
+})
+
 app.listen(port , () => console.log("Server listening on 3001"));
