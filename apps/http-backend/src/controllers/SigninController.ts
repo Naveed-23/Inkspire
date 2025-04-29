@@ -31,21 +31,13 @@ export const SigninController = async (req: Request, res: Response) => {
             const userId = user.id;
             const token = jwt.sign({userId}, JWT_SECRET);
             console.log("token", token);
-            // Set token in HTTP-only cookie
-            // res.cookie("token", token, {
-            //     httpOnly: true, // Prevent access via JavaScript (XSS protection)
-            //     secure: process.env.NODE_ENV === "production",  // HTTPS in production
-            //     sameSite: "lax",
-            //     maxAge: 7 * 24 * 60 * 1000 // 7 days
-            // })
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: true, // Always true in production
-                sameSite: "none", // Required for cross-site cookies
-                maxAge: 7 * 24 * 60 * 1000,
-                domain: process.env.NODE_ENV === "production" ? "https://inkspire.naveedhussain.tech" : "http:localhost:3000", // Set your production domain
+                secure: false, // ⛔ HTTPS only - must be false for localhost
+                sameSite: "lax", // ✅ lax works fine in development
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
                 path: "/"
-              });
+              });               
             res.status(200).json({
                 msg: "User Successfully logged in",
                 token

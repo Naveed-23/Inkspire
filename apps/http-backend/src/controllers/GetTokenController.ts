@@ -7,6 +7,8 @@ interface TokenResponse {
 export const GetTokenController = (req: Request, res: Response<TokenResponse>): void => {
     try {
         const token = req.cookies?.token;
+        console.log(req.cookies,"cookies")
+        console.log(token, "token")
         
         if (!token) {
             res.status(401).json({ token: null });
