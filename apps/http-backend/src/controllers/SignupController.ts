@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config";
 import bcrypt from "bcrypt";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export const SignupController = async (req: Request, res: Response) => {
     const { success } = SignupSchema.safeParse(req.body);
     if(!success){
@@ -47,12 +49,12 @@ export const SignupController = async (req: Request, res: Response) => {
             //   });   
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: true,
-                sameSite: "none",
-                domain: ".naveedhussain.tech", // 🔥 Leading dot means it works for all subdomains
+                secure: isProduction,
+                sameSite: isProduction ? "none" : "lax",
+                domain: isProduction ? ".naveedhussain.tech" : undefined,
                 maxAge: 7 * 24 * 60 * 60 * 1000,
                 path: "/",
-              });                                              
+            });                                         
             res.status(200).json({
                 msg: "User successfully Created",
                 token
