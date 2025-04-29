@@ -36,7 +36,7 @@ export default function Ink({ roomId, socket }: {
                 g.destroy();
             };
         }
-    }, [canvasRef]);
+    }, [canvasRef, roomId, socket]);
     
     return (
         <div style={{ height: "100vh", overflow: "hidden" }} className="bg-black">

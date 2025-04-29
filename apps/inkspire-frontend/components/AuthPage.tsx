@@ -54,11 +54,29 @@ export function AuthPage({ isSignin }: { isSignin: boolean}){
           toast.success(res.data.msg);
           router.push('/ink');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error:", err);
-        toast.error(err?.response?.data?.msg || "Something went wrong");
+        let errorMessage = "Something went wrong";
+        
+        if (err instanceof Error) {
+          errorMessage = err.message;
+        } 
+        
+        if (typeof err === 'object' && err !== null && 'response' in err) {
+          errorMessage = (err as ApiError).response?.data?.msg || errorMessage;
+        }
+      
+        toast.error(errorMessage);
       }
     }
+
+    type ApiError = {
+      response?: {
+        data?: {
+          msg?: string;
+        };
+      };
+    } & Error;
        
     
     return (

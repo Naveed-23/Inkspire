@@ -47,7 +47,7 @@ export default function InkRoom({ roomId }: { roomId: string }) {
   
     connectSocket();
   
-  }, [roomId]);
+  }, [roomId, socket]);
   // Added roomId to deps just in case it changes
 
   if (!socket) {

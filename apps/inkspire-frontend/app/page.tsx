@@ -1,7 +1,7 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Circle, Diamond, Pencil, Ruler, Share2, Sparkles } from 'lucide-react';
+import { ArrowRight, Pencil, Ruler, Share2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { ModeToggle } from '@/components/ModeToggle';
 
@@ -18,19 +18,19 @@ const InkCanvasAnimation = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  const strokes = [
+  const strokes = useMemo(() => [
     { path: "M 50 150 Q 100 50 150 150 T 250 150", color: "#6366f1" },
     { path: "M 100 100 L 200 200", color: "#ec4899" },
     { path: "M 150 50 L 150 250", color: "#f59e0b" },
     { path: "M 50 200 A 50 50 0 0 1 150 200", color: "#10b981" },
-  ];
+  ], []); // Empty dependency array means this only initializes once
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveStroke((prev) => (prev + 1) % strokes.length);
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [strokes]); // Now strokes is stable between renders
 
   // Calculate normalized mouse position for effects
   const normalizedMouseX = (mousePosition.x / window.innerWidth) * 2 - 1;
@@ -245,7 +245,14 @@ const InkCanvasAnimation = () => {
   );
 };
 
-const FeatureCard = ({ icon, title, description, delay }: any) => (
+interface FeatureCardProps {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  delay: number;
+}
+
+const FeatureCard = ({ icon, title, description, delay }: FeatureCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
     whileInView={{ opacity: 1, y: 0 }}
