@@ -13,6 +13,7 @@ export default function CreateRoom() {
     const router = useRouter();
 
     async function handleRoom() {
+        
         if (!room.trim()) return;
         setIsCreating(true);
         try {
