@@ -23,6 +23,7 @@ export default function CreateRoom() {
                 withCredentials: true,
             });
             if (res?.data?.msg) {
+                router.refresh();
                 router.push(`/ink/${res.data.msg}`);
             }
         } catch (error) {
