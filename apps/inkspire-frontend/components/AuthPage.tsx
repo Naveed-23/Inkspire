@@ -120,10 +120,31 @@ export function AuthPage({ isSignin }: { isSignin: boolean}){
                   {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                 </div>
               </div>
-          <CardFooter className="flex justify-between mt-4 p-[-4px]">
-            <Button className="cursor-pointer" variant="outline" type="button" onClick={() => reset()}>Cancel</Button>
-            <Button className="cursor-pointer" type="submit">{isSignin ? "Sign in" : "Sign up"}</Button>
-          </CardFooter>
+              <CardFooter className="flex justify-between mt-4 p-[-4px] flex-wrap gap-2">
+                <div className="flex gap-2">
+                  <Button className="cursor-pointer" variant="outline" type="button" onClick={() => reset()}>
+                    Cancel
+                  </Button>
+                  {isSignin && (
+                    <Button
+                      className="cursor-pointer"
+                      variant="secondary"
+                      type="button"
+                      onClick={() =>
+                        reset({
+                          email: "testuser@gmail.com",
+                          password: "12345678",
+                        })
+                      }
+                    >
+                      Test Creds
+                    </Button>
+                  )}
+                </div>
+                <Button className="cursor-pointer" type="submit">
+                  {isSignin ? "Sign in" : "Sign up"}
+                </Button>
+              </CardFooter>
             </form>
           </CardContent>
         </Card>
